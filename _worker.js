@@ -1,19 +1,17 @@
-export async function onRequest(context) {
-  const workerBase = "https://api.kyrzixo.workers.dev";
-  const url = new URL(context.request.url);
+export default {
+  async fetch(request) {
+    const workerBase = "https://api.kyrzixo.workers.dev";
 
-  const targetUrl = workerBase + url.pathname + url.search;
+    const url = new URL(request.url);
 
-  const response = await fetch(targetUrl, {
-    method: context.request.method,
-    headers: context.request.headers,
-    body: context.request.body,
-    redirect: "manual"
-  });
+    const targetUrl = workerBase + url.pathname + url.search;
 
-  // Rebuild the response so Set-Cookie and redirects work
-  return new Response(response.body, {
-    status: response.status,
-    headers: response.headers
-  });
-}
+    const response = await fetch(targetUrl, {
+      method: request.method,
+      headers: request.headers,
+      body: request.body
+    });
+
+    return response;
+  }
+};
