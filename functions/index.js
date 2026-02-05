@@ -1,18 +1,17 @@
 export async function onRequest(context) {
+  const workerBase = "https://api.kyrzixo.workers.dev";
+
+  // Get the requested path and query
   const url = new URL(context.request.url);
+  const target = workerBase + url.pathname + url.search;
 
-  // Your worker origin
-  const workerOrigin = "https://api.kyrzixo.workers.dev";
-
-  // Keep the same path and query
-  const targetUrl = workerOrigin + url.pathname + url.search;
-
-  const response = await fetch(targetUrl, {
+  // Forward the request to the worker
+  const response = await fetch(target, {
     method: context.request.method,
     headers: context.request.headers,
-    body: context.request.body,
-    redirect: "follow"
+    body: context.request.body
   });
 
-  return response;
+  // Return worker response
+  return new Response(response.body, response);
 }
