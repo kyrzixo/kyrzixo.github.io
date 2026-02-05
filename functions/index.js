@@ -1,15 +1,18 @@
 export async function onRequest(context) {
-  const workerURL = "https://api.kyrzixo.workers.dev";
-
   const url = new URL(context.request.url);
 
-  // Rebuild the full target URL
-  const targetURL = new URL(workerURL);
-  targetURL.pathname = url.pathname;
-  targetURL.search = url.search;
+  // Your worker base URL
+  const workerBase = "https://api.kyrzixo.workers.dev";
 
-  // Clone the original request
-  const newRequest = new Request(targetURL.toString(), context.request);
+  // Preserve full path and query
+  const targetUrl = workerBase + url.pathname + url.search;
 
-  return fetch(newRequest);
+  const response = await fetch(targetUrl, {
+    method: context.request.method,
+    headers: context.request.headers,
+    body: context.request.body,
+    redirect: "manual"
+  });
+
+  return new Response(response.body, response);
 }
